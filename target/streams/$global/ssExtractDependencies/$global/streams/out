@@ -1,0 +1,2 @@
+[error] sbt.librarymanagement.ResolveException: unresolved dependency: com.typesafe.akka#akka-http-spray-json-experimental_2.13;2.4.11.2: not found
+[error] 	at sbt.internal.librarymanagement.IvyActions$.resolveAndRetrieve(IvyActions.scala:332)

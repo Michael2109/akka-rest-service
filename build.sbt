@@ -18,7 +18,12 @@ libraryDependencies ++= {
     "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
     "ch.qos.logback" % "logback-classic" % "1.2.3",
     "de.heikoseeberger" %% "akka-http-play-json" % "1.27.0",
-    "com.typesafe.akka" %% "akka-http-spray-json-experimental" % "2.4.11.2",
+    "com.typesafe.akka" %% "akka-http-spray-json" % "10.1.9",
+    "com.h2database" % "h2" % "1.4.199",
+    "com.typesafe.slick" %% "slick" % "3.3.2",
+    "org.slf4j" % "slf4j-nop" % "1.6.4",
+    "com.typesafe" % "config" % "1.3.4",
+
     "com.typesafe.akka" %% "akka-testkit" % akkaVersion % Test,
     "org.scalatest" %% "scalatest" % "3.0.8" % Test
   )

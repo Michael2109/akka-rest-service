@@ -9,6 +9,7 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Route
 import akka.stream.ActorMaterializer
 import com.akkarestservice.actors.UserRegistryActor
+import com.akkarestservice.database.DatabaseConnector
 import com.akkarestservice.routes.UserRoutes
 
 //#main-class
@@ -40,6 +41,8 @@ object QuickstartServer extends App with UserRoutes {
       e.printStackTrace()
       system.terminate()
   }
+
+  new DatabaseConnector()
 
   Await.result(system.whenTerminated, Duration.Inf)
   //#http-server
