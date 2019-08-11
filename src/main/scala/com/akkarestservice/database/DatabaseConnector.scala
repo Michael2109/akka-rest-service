@@ -25,16 +25,20 @@ object DatabaseConnector {
   def addLicense(license: License): Unit ={
     //  val setupFuture = db.run(setup)
     Await.result(db.run(DBIO.seq(
-      licenses += License(license.id, license.customerID, license.key)
+      licenses += License(license.id, license.userID, license.key, license.totalUsers)
     )), Duration.Inf)
   }
+
+ /* def getLicenses(): List[License] ={
+    Await.result(db.run(licenses.result), Duration.Inf)
+  }*/
 
   def getLicenseById(id: Int): Option[License] ={
     Await.result(db.run((for (license <- licenses if license.id === id) yield license).result.headOption), Duration.Inf)
   }
 
   def getLicenseByCustomerID(accountName: String): Option[License] ={
-    Await.result(db.run((for (license <- licenses if license.customerID === accountName) yield license).result.headOption), Duration.Inf)
+    Await.result(db.run((for (license <- licenses if license.userID === accountName) yield license).result.headOption), Duration.Inf)
   }
 
   def getLicenseByKey(key: String): Option[License] ={
