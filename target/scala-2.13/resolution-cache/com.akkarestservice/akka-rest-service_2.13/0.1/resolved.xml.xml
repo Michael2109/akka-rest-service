@@ -4,7 +4,7 @@
 		module="akka-rest-service_2.13"
 		revision="0.1"
 		status="integration"
-		publication="20190805201544"
+		publication="20190811131319"
 	>
 		<description>
 		akka-rest-service
@@ -38,7 +38,6 @@
 		<dependency org="com.typesafe.akka" name="akka-http_2.13" rev="10.1.9" conf="compile->default(compile)"/>
 		<dependency org="com.typesafe.play" name="play-ws-standalone-json_2.13" rev="2.0.7" conf="compile->default(compile)"/>
 		<dependency org="com.typesafe.akka" name="akka-slf4j_2.13" rev="2.5.23" conf="compile->default(compile)"/>
-		<dependency org="ch.qos.logback" name="logback-classic" rev="1.2.3" conf="compile->default(compile)"/>
 		<dependency org="de.heikoseeberger" name="akka-http-play-json_2.13" rev="1.27.0" conf="compile->default(compile)"/>
 		<dependency org="com.typesafe.akka" name="akka-http-spray-json_2.13" rev="10.1.9" conf="compile->default(compile)"/>
 		<dependency org="com.h2database" name="h2" rev="1.4.199" conf="compile->default(compile)"/>
