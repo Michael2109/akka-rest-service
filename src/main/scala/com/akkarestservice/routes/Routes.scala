@@ -2,34 +2,32 @@ package com.akkarestservice.routes
 
 import akka.actor.{ActorRef, ActorSystem}
 import akka.event.Logging
-
-import scala.concurrent.duration._
+import akka.http.scaladsl.model.{ContentTypes, HttpEntity, StatusCodes}
 import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Route
-import akka.http.scaladsl.server.directives.MethodDirectives.delete
-import akka.http.scaladsl.server.directives.MethodDirectives.get
-import akka.http.scaladsl.server.directives.MethodDirectives.post
-import akka.http.scaladsl.server.directives.RouteDirectives.complete
+import akka.http.scaladsl.server.directives.MethodDirectives.{delete, get, post}
 import akka.http.scaladsl.server.directives.PathDirectives.path
-
-import scala.concurrent.Future
+import akka.http.scaladsl.server.directives.RouteDirectives.complete
 import akka.pattern.ask
 import akka.util.Timeout
 import com.akkarestservice.JsonSupport
 import com.akkarestservice.actors.UserRegistryActor._
 import com.akkarestservice.actors.{User, Users}
 
+import scala.concurrent.Future
+import scala.concurrent.duration._
+import scala.io.Source
+
 //#user-routes-class
-trait UserRoutes extends JsonSupport {
+trait Routes extends JsonSupport {
   //#user-routes-class
 
   // we leave these abstract, since they will be provided by the App
   implicit def system: ActorSystem
 
-  lazy val log = Logging(system, classOf[UserRoutes])
+  lazy val log = Logging(system, classOf[Routes])
 
-  // other dependencies that UserRoutes use
+  // other dependencies that Routes use
   def userRegistryActor: ActorRef
 
   // Required by the `ask` (?) method below
@@ -38,8 +36,9 @@ trait UserRoutes extends JsonSupport {
   //#all-routes
   //#users-get-post
   //#users-get-delete
-  lazy val userRoutes: Route =
-    pathPrefix("users") {
+  lazy val routes: Route =
+  concat(
+    pathPrefix("api") {
       concat(
         //#users-get-delete
         pathEnd {
@@ -85,9 +84,19 @@ trait UserRoutes extends JsonSupport {
               //#users-delete-logic
             }
           )
-        }
+        },
+
       )
       //#users-get-delete
-    }
-  //#all-routes
+    },
+    pathPrefix("html") {
+      path("hello") {
+        get {
+          println("HERE")
+          println( Source.fromResource("html/licenses.html"))
+          complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, Source.fromResource("html/licenses.html").getLines.mkString))
+        }
+      }
+    })
+
 }
