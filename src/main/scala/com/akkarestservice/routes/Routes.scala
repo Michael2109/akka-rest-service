@@ -92,8 +92,6 @@ trait Routes extends JsonSupport {
     pathPrefix("html") {
       path("hello") {
         get {
-          println("HERE")
-          println( Source.fromResource("html/licenses.html"))
           complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, Source.fromResource("html/licenses.html").getLines.mkString))
         }
       }
