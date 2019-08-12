@@ -18,30 +18,59 @@
         function createLicense(userID, totalUsers) {
 
             console.log(userID + " " + totalUsers);
-            
-            var data = JSON.stringify({
-                "userID":userID,
-                "totalUsers":totalUsers
-            });
-            
-            console.log(data);
-            
-            success = false;
-            dataType = "application/json";
-            $.ajax({
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                type: "POST",
-                url: "http://localhost:8080/api/licenses/add-license",
-                data: data,
-                success: success,
-                dataType: "json"
-            });
-            console.log(success);
+            if(userID && totalUsers){
 
+                var data = JSON.stringify({
+                    "userID":userID,
+                    "totalUsers":parseInt(totalUsers)
+                });
 
+                console.log(data);
+
+                success = false;
+                dataType = "application/json";
+                $.ajax({
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    type: "POST",
+                    url: "http://localhost:8080/api/licenses/add-license",
+                    data: data,
+                    success: success,
+                    dataType: "json"
+                });
+                console.log(success);
+            }
+
+        }
+
+        function search(userID){
+            console.log("Searching for " + userID);
+
+             $.get("http://localhost:8080/api/licenses", function(data, status){
+
+             var licenses = data.licenses;
+
+             console.log(licenses);
+
+            var tbody = document.getElementById('license-table');
+
+            for (var i = 0; i < licenses.length; i++) {
+                var tr = "<tr>";
+
+                /* Verification to add the last decimal 0 */
+                if (licenses[i].value.toString().substring(licenses[i].value.toString().indexOf('.'), licenses[i].value.toString().length) < 2)
+                    licenses[i].value += "0";
+
+                /* Must not forget the $ sign */
+                tr += "<td>" + licenses[i].key + "</td>" + "<td>$" + licenses[i].value.toString() + "</td></tr>";
+
+                /* We add the table row to the table body */
+                tbody.innerHTML += tr;
+                console.log(tr);
+            }
+              });
         }
     </script>
 </head>
@@ -50,17 +79,19 @@
 
 <hr>
 
-User ID: <input type="text" name="userId">
-Total Users: <input type="text" name="totalUsers">
-<button onclick="createLicense('2', 1)">Create License</button>
+User ID: <input type="text" id="user-id-create-license">
+Total Users: <input type="text" id="total-users-create-license">
+<button onclick="createLicense(document.getElementById('user-id-create-license').value, document.getElementById('total-users-create-license').value)">Create License</button>
 
 <hr>
 
-<button type="button">Search</button>
+User ID: <input type="text" id="user-id-search">
+<button onclick="search(document.getElementById('user-id-search').value)">Search</button>
+
 
 <hr>
 
-<table class="table">
+<table class="table" id="license-table">
     <thead>
     <tr>
         <th scope="col">ID</th>

@@ -67,9 +67,10 @@ trait Routes extends JsonSupport {
                 val totalUsers =  input.asJsObject.fields.get("totalUsers").get.toString.toInt
 
                 val newLicense = License(-1, userID, "key123", totalUsers)
+                println(newLicense)
                 println("Adding license: " + newLicense)
                 DatabaseConnector.addLicense(newLicense)
-                complete(None)
+                complete(newLicense)
               }
             }
 
@@ -78,8 +79,16 @@ trait Routes extends JsonSupport {
       }
     }
     ,
+    pathPrefix("api") {
+      pathPrefix("licenses") {
+        get {
+         complete(DatabaseConnector.getLicenses())
+        }
+      }
+    }
+      ,
     pathPrefix("html") {
-      path("hello") {
+      path("licenses") {
         get {
           complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, Source.fromResource("html/licenses.html").getLines.mkString(System.lineSeparator())))
         }
