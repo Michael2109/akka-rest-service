@@ -1,6 +1,6 @@
-package com.akkarestservice.database.tables
+package com.licenseserver.database.tables
 
-import com.akkarestservice.database.DatabaseConnector
+import com.licenseserver.database.DatabaseConnector
 import slick.lifted.Tag
 import slick.jdbc.H2Profile.api._
 

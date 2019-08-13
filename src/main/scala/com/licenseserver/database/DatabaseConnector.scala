@@ -1,6 +1,6 @@
-package com.akkarestservice.database
+package com.licenseserver.database
 
-import com.akkarestservice.database.tables._
+import com.licenseserver.database.tables._
 import slick.jdbc.H2Profile.api._
 
 import scala.concurrent.Await

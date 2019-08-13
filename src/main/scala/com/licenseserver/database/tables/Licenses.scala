@@ -1,3 +1,3 @@
-package com.akkarestservice.database.tables
+package com.licenseserver.database.tables
 
 case class Licenses(licenses: Seq[License])

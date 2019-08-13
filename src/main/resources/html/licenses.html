@@ -17,7 +17,6 @@
     <script type="text/javascript">
         function createLicense(userID, totalUsers) {
 
-            console.log(userID + " " + totalUsers);
             if(userID && totalUsers){
 
                 var data = JSON.stringify({
@@ -54,20 +53,19 @@
 
              console.log(licenses);
 
-            var tbody = document.getElementById('license-table');
+            var tableBody = document.getElementById('license-table-body');
+
+            tableBody.innerHTML = "";
 
             for (var i = 0; i < licenses.length; i++) {
                 var tr = "<tr>";
 
-                /* Verification to add the last decimal 0 */
-                if (licenses[i].value.toString().substring(licenses[i].value.toString().indexOf('.'), licenses[i].value.toString().length) < 2)
-                    licenses[i].value += "0";
+                tr += "<td>" + licenses[i].id + "</td>" + "<td>" + licenses[i].userID + "<td>" + licenses[i].key +"<td>" + licenses[i].totalUsers + "</td>";
 
-                /* Must not forget the $ sign */
-                tr += "<td>" + licenses[i].key + "</td>" + "<td>$" + licenses[i].value.toString() + "</td></tr>";
+                tr += "</tr>";
 
                 /* We add the table row to the table body */
-                tbody.innerHTML += tr;
+                tableBody.innerHTML += tr;
                 console.log(tr);
             }
               });
@@ -100,13 +98,7 @@ User ID: <input type="text" id="user-id-search">
         <th scope="col">Total Users</th>
     </tr>
     </thead>
-    <tbody>
-    <tr>
-        <th scope="row">1</th>
-        <td>Mark</td>
-        <td>Otto</td>
-        <td>@mdo</td>
-    </tr>
+    <tbody id="license-table-body">
     </tbody>
 </table>
 

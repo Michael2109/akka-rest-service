@@ -1,6 +1,6 @@
-package com.akkarestservice.database
+package com.licenseserver.database
 
-import com.akkarestservice.database.tables.License
+import com.licenseserver.database.tables.License
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{Matchers, WordSpec}
 

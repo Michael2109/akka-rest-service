@@ -1,9 +1,9 @@
-package com.akkarestservice
+package com.licenseserver
 
 import akka.http.scaladsl.marshalling.Marshaller
-import com.akkarestservice.actors.UserRegistryActor.ActionPerformed
-import com.akkarestservice.actors.{User, Users}
-import com.akkarestservice.database.tables.{License, Licenses}
+import com.licenseserver.actors.UserRegistryActor.ActionPerformed
+import com.licenseserver.actors.{User, Users}
+import com.licenseserver.database.tables.{License, Licenses}
 import spray.json.RootJsonFormat
 
 //#json-support

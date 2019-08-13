@@ -1,10 +1,10 @@
-name := "akka-rest-service"
+name := "license-server"
 
 version := "0.1"
 
 scalaVersion := "2.12.6"
 
-organization := "com.akkarestservice"
+organization := "com.licenseserver"
 
 libraryDependencies ++= {
   val akkaVersion = "2.5.23"
@@ -22,8 +22,10 @@ libraryDependencies ++= {
     "com.typesafe.slick" %% "slick" % "3.3.2",
     "org.slf4j" % "slf4j-nop" % "1.6.4",
     "com.typesafe" % "config" % "1.3.4",
+    "com.license4j" % "license4j-runtime-library" % "4.7.1",
+    "org.apache.commons" % "commons-text" % "1.7",
 
-    "com.typesafe.akka" %% "akka-testkit" % akkaVersion % Test,
+  "com.typesafe.akka" %% "akka-testkit" % akkaVersion % Test,
     "org.scalatest" %% "scalatest" % "3.0.8" % Test
   )
 }

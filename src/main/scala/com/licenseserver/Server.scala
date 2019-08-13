@@ -1,12 +1,12 @@
-package com.akkarestservice
+package com.licenseserver
 
 //#quick-start-server
 import akka.actor.{ActorRef, ActorSystem}
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
-import com.akkarestservice.actors.UserRegistryActor
-import com.akkarestservice.database.DatabaseConnector
-import com.akkarestservice.routes.Routes
+import com.licenseserver.actors.UserRegistryActor
+import com.licenseserver.database.DatabaseConnector
+import com.licenseserver.routes.Routes
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, Future}

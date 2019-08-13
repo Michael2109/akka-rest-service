@@ -1,4 +1,4 @@
-package com.akkarestservice.configuration
+package com.licenseserver.configuration
 
 import com.typesafe.config.ConfigFactory
 

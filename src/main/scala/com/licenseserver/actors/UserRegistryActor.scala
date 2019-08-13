@@ -1,4 +1,4 @@
-package com.akkarestservice.actors
+package com.licenseserver.actors
 
 //#user-registry-actor
 import akka.actor.{ Actor, ActorLogging, Props }
