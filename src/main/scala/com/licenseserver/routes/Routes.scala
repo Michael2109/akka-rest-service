@@ -31,63 +31,95 @@ trait Routes extends JsonSupport {
   implicit lazy val timeout = Timeout(5.seconds) // usually we'd obtain the timeout from the system's configuration
 
   lazy val routes: Route =
-  concat(
-    pathPrefix("api") {
-      pathPrefix("licenses") {
-        pathPrefix("id" / IntNumber) {
-          id => {
-            concat {
-              get {
+    concat(
+      pathPrefix("api") {
+        pathPrefix("licenses") {
+          pathPrefix("id" / IntNumber) {
+            id => {
+              concat {
+                get {
 
-                val license = DatabaseConnector.getLicenseById(id)
-                license match {
-                  case Some(value) => complete(value)
-                  case None => complete(s"License $id not found")
+                  val license = DatabaseConnector.getLicenseById(id)
+                  license match {
+                    case Some(value) => complete(value)
+                    case None => complete(s"License $id not found")
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      pathPrefix("api") {
+        pathPrefix("licenses") {
+          pathPrefix("add-license") {
+
+            post {
+              entity(as[JsValue]) {
+                input => {
+
+                  val userID = input.asJsObject.fields("userID").toString.drop(1).dropRight(1)
+                  val totalActivations = input.asJsObject.fields("totalActivations").toString.toInt
+
+                  val newLicense = License(-1, userID, LicenseGenerator.createLicense(userID), totalActivations, totalActivations)
+
+                  DatabaseConnector.addLicense(newLicense)
+                  complete(newLicense)
                 }
               }
             }
           }
         }
       }
-    },
-    pathPrefix("api") {
-      pathPrefix("licenses") {
-        pathPrefix("add-license") {
+      ,
+      pathPrefix("api") {
+        pathPrefix("licenses") {
+          pathPrefix("activate-license") {
 
-          post {
-            entity(as[JsValue]) {
-              input => {
+            post {
+              entity(as[JsValue]) {
+                input => {
 
-                val userID = input.asJsObject.fields("userID").toString.drop(1).dropRight(1)
-                val totalUsers =  input.asJsObject.fields("totalUsers").toString.toInt
+                  val key = input.asJsObject.fields("licenseKey").toString.drop(1).dropRight(1)
 
-                val newLicense = License(-1, userID, LicenseGenerator.createLicense(userID), totalUsers)
+                  val success = DatabaseConnector.activateLicense(key)
 
-                DatabaseConnector.addLicense(newLicense)
-                complete(newLicense)
+                  if (success) {
+                    complete(DatabaseConnector.getLicenseByKey(key))
+                  } else {
+                    complete(None)
+                  }
+                }
               }
             }
           }
         }
       }
-    }
-    ,
-    pathPrefix("api") {
-      pathPrefix("licenses") {
-        get {
-         complete(DatabaseConnector.getLicenses())
-        }
-      }
-    }
       ,
-    pathPrefix("html") {
-      path("licenses") {
-        get {
-          complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, Source.fromResource("html/licenses.html").getLines.mkString(System.lineSeparator())))
+      pathPrefix("api") {
+        pathPrefix("licenses") {
+          get {
+            complete(DatabaseConnector.getLicenses())
+          }
         }
       }
-    }
-  )
+      ,
+      pathPrefix("html") {
+        path("licenses") {
+          get {
+            complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, Source.fromResource("html/licenses.html").getLines.mkString(System.lineSeparator())))
+          }
+        }
+      },
+
+      pathPrefix("html") {
+        path("license-activator") {
+          get {
+            complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, Source.fromResource("html/license-activator.html").getLines.mkString(System.lineSeparator())))
+          }
+        }
+      }
+    )
 
 
 }

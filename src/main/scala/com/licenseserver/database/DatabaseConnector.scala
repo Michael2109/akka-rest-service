@@ -1,6 +1,9 @@
 package com.licenseserver.database
 
+import java.sql.Timestamp
+
 import com.licenseserver.database.tables._
+import org.joda.time.DateTime
 import slick.jdbc.H2Profile.api._
 
 import scala.concurrent.Await
@@ -12,19 +15,16 @@ object DatabaseConnector {
 
   val licenses = TableQuery[LicenseTable]
 
-  val registeredPcs = TableQuery[RegisteredPCsTable]
-
   val setup = DBIO.seq(
-    (licenses.schema ++ registeredPcs.schema).createIfNotExists
+    (licenses.schema).createIfNotExists
   )
 
   //  val setupFuture = db.run(setup)
   Await.result(db.run(setup), Duration.Inf)
 
   def addLicense(license: License): Unit = {
-    //  val setupFuture = db.run(setup)
     Await.result(db.run(DBIO.seq(
-      licenses += License(license.id, license.userID, license.key, license.totalUsers)
+      licenses += License(license.id, license.userID, license.key, license.activationsLeft, license.totalActivations)
     )), Duration.Inf)
   }
 
@@ -44,18 +44,37 @@ object DatabaseConnector {
     Await.result(db.run((for (license <- licenses if license.key === key) yield license).result.headOption), Duration.Inf)
   }
 
-  def addRegisteredPC(registeredPC: RegisteredPC): Unit = {
+  def activateLicense(key: String): Boolean ={
+    val license = getLicenseByKey(key)
 
-    //  val setupFuture = db.run(setup)
-    Await.result(db.run(DBIO.seq(
-      registeredPcs += RegisteredPC(registeredPC.id, registeredPC.licenseID, registeredPC.pcId)
-    )), Duration.Inf)
+    license match {
+      case Some(originalLicense) =>
+
+        if(originalLicense.activationsLeft > 0) {
+          val q = for {l <- licenses if l.id === originalLicense.id} yield l.activationsLeft
+          Await.result(db.run(q.update(originalLicense.activationsLeft - 1)), Duration.Inf)
+          true
+        } else {
+          false
+        }
+      case None => false
+    }
   }
 
-  def getRegisteredPCsByLicenseID(licenseId: Int): Option[RegisteredPC] = {
-    Await.result(db.run((for (registeredPC <- registeredPcs if registeredPC.licenseId === licenseId) yield registeredPC).result.headOption), Duration.Inf)
-  }
 
+  def increaseActivations(licenseId: Int, activationAmount: Int): Boolean ={
+    val license = getLicenseById(licenseId)
+
+    license match {
+      case Some(originalLicense) =>
+
+        val q = for { l <- licenses if l.id === originalLicense.id } yield (l.activationsLeft, l.totalActivations)
+        Await.result(db.run(q.update((originalLicense.activationsLeft + activationAmount, originalLicense.totalActivations + activationAmount))), Duration.Inf)
+
+        true
+      case None => false
+    }
+  }
 
   def close(): Unit = {
     db.close()
