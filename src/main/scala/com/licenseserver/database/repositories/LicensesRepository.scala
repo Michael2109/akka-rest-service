@@ -1,36 +1,37 @@
 package com.licenseserver.database.repositories
 
 import com.licenseserver.actors.License
-import com.licenseserver.database.DatabaseConnector
 import com.licenseserver.database.tables.LicensesTable
-import org.h2.engine.Database
-import slick.basic.DatabaseConfig
 import slick.dbio.DBIOAction
 import slick.jdbc.H2Profile
+import slick.jdbc.H2Profile.api._
+
+import scala.concurrent.Future
+
 
 class LicensesRepository(db: H2Profile#Backend#Database) extends LicensesTable {
 
-  def createTable() = db.run(DBIOAction.seq(licenses.schema.create))
+  def createTable(): Future[Unit] = db.run(DBIOAction.seq(licenses.schema.create))
 
-  def dropTable() = db.run(DBIOAction.seq(licenses.schema.drop))
+  def dropTable(): Future[Unit] = db.run(DBIOAction.seq(licenses.schema.drop))
 
-  def insert(license: License) = db.run(licenses += license)
+  def insert(license: License): Future[Int] = db.run(licenses += license)
 
 
-  def getLicenseById(id: Int): Option[License] = {
+  def getLicenseById(id: Int): Future[Option[License]] = {
     db.run((for (license <- licenses if license.id === id) yield license).result.headOption)
   }
 
-  def getLicenseByUserID(accountName: String): Option[License] = {
+  def getLicenseByUserID(accountName: String): Future[Option[License]] = {
     db.run((for (license <- licenses if license.userID === accountName) yield license).result.headOption)
   }
 
-  def getLicenseByKey(key: String): Option[License] = {
+  def getLicenseByKey(key: String): Future[Option[License]] = {
     db.run((for (license <- licenses if license.key === key) yield license).result.headOption)
   }
 
-  def deleteLicense(id: Int): Unit = {
-
+  def deleteLicense(id: Int): Future[Int] = {
+    db.run(licenses.filter(_.id === id).delete)
   }
 
   def activateLicense(key: String): Boolean = {
