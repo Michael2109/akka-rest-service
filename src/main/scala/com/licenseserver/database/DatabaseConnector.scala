@@ -12,8 +12,7 @@ import scala.concurrent.duration.Duration
 
 object DatabaseConnector {
 
-  private val config = DatabaseConfig.forConfig[H2Profile]("h2mem1")
-  private val db: H2Profile#Backend#Database = config.db
+  private val db: H2Profile#Backend#Database = Database.forConfig("h2mem1")
 
   val licensesRepository: LicensesRepository = new LicensesRepository(db)
 

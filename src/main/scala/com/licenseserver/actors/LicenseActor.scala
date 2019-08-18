@@ -6,6 +6,9 @@ import com.licenseserver.actors.LicenseActor._
 import com.licenseserver.database.DatabaseConnector
 import com.licenseserver.generator.LicenseGenerator
 
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
+
 final case class License(id: Int, userID: String, key: String, activationsLeft: Int, totalActivations: Int)
 
 object LicenseActor {
@@ -31,10 +34,7 @@ object LicenseActor {
 class LicenseActor extends Actor with ActorLogging {
 
   def receive: Receive = {
-    case ActivateLicense(key) => sender() ! {
-      val activated = DatabaseConnector.licensesRepository.activateLicense(key)
-
-    }
+    case ActivateLicense(key) => sender() ! activateLicense(key)
     case CreateLicense(userID, activationTotal) => sender() ! createLicense(userID, activationTotal)
     case GetLicenseByID(id) => sender() ! DatabaseConnector.licensesRepository.getLicenseById(id)
     case GetLicenseByKey(key) => sender() ! DatabaseConnector.licensesRepository.getLicenseByKey(key)
@@ -43,10 +43,28 @@ class LicenseActor extends Actor with ActorLogging {
     case DeleteLicense(id) => sender() ! DatabaseConnector.licensesRepository.deleteLicense(id)
   }
 
-  def createLicense(userID: String, activationTotal: Int): Unit ={
+  def createLicense(userID: String, activationTotal: Int): Option[License] = {
 
     val key = LicenseGenerator.createLicense(userID)
 
-    DatabaseConnector.licensesRepository.insert(License(-1, userID, key, activationTotal, activationTotal))
+    val licenseID = Await.result(DatabaseConnector.licensesRepository.insert(License(-1, userID, key, activationTotal, activationTotal)), Duration.Inf)
+    Await.result(DatabaseConnector.licensesRepository.getLicenseById(licenseID), Duration.Inf)
+  }
+
+  def activateLicense(key: String): Option[License] ={
+    val licenseToActivate = Await.result(DatabaseConnector.licensesRepository.getLicenseByKey(key), Duration.Inf)
+
+    licenseToActivate match {
+      case Some(license) => {
+        if(license.activationsLeft > 0) {
+          Await.result(DatabaseConnector.licensesRepository.updateActivationsLeftByID(license.id, license.activationsLeft - 1), Duration.Inf)
+          val updatedLicense = Await.result(DatabaseConnector.licensesRepository.getLicenseById(license.id), Duration.Inf)
+          updatedLicense
+        } else {
+          None
+        }
+      }
+      case None => None
+    }
   }
 }

@@ -1,7 +1,7 @@
 package com.licenseserver
 
 import com.licenseserver.actors.License
-import com.licenseserver.database.tables.LicensesContainer
+import com.licenseserver.database.tables.Licenses
 import spray.json.RootJsonFormat
 
 //#json-support
@@ -14,5 +14,5 @@ trait JsonSupport extends SprayJsonSupport {
 
   implicit val licenseJsonFormat: RootJsonFormat[License] = jsonFormat5(License)
 
-  implicit val licensesJsonFormat = jsonFormat1(LicensesContainer)
+  implicit val licensesJsonFormat = jsonFormat1(Licenses)
 }

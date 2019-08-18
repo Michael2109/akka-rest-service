@@ -12,8 +12,9 @@ import akka.pattern.ask
 import akka.util.Timeout
 import com.licenseserver.JsonSupport
 import com.licenseserver.actors.License
-import com.licenseserver.actors.LicenseActor.{ActivateLicense, CreateLicense, GetLicenseByID}
+import com.licenseserver.actors.LicenseActor.{ActivateLicense, CreateLicense, GetLicenseByID, GetLicenses}
 import com.licenseserver.database.DatabaseConnector
+import com.licenseserver.database.tables.Licenses
 import com.licenseserver.generator.LicenseGenerator
 import spray.json.JsValue
 
@@ -96,7 +97,7 @@ trait Routes extends JsonSupport {
       pathPrefix("api") {
         pathPrefix("licenses") {
           get {
-            complete(DatabaseConnector.licensesRepository.licenses)
+            complete((licenseActor ? GetLicenses).mapTo[Licenses])
           }
         }
       }

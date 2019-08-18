@@ -2,9 +2,10 @@ package com.licenseserver.database.repositories
 
 import com.licenseserver.actors.License
 import com.licenseserver.database.tables.LicensesTable
-import slick.dbio.DBIOAction
+import slick.dbio.{DBIOAction, Effect}
 import slick.jdbc.H2Profile
 import slick.jdbc.H2Profile.api._
+import slick.sql.FixedSqlAction
 
 import scala.concurrent.Future
 
@@ -34,43 +35,18 @@ class LicensesRepository(db: H2Profile#Backend#Database) extends LicensesTable {
     db.run(licenses.filter(_.id === id).delete)
   }
 
-  def activateLicense(key: String): Boolean = {
+  def updateByID(license: License): Future[Int] = {
+    db.run(licenses.insertOrUpdate(license))
+  }
 
-    val licenseWithKey = licenses.filter(_.key === key).map(_.activationsLeft).
-    db.run(licenseWithKey.update())
-
-    val q = for { l <- licenses if l.key === key } yield l.activationsLeft
-    q.update().run
-
-    val license = getLicenseByKey(key)
-
-    license match {
-      case Some(originalLicense) =>
-
-
-        if (originalLicense.activationsLeft > 0) {
-          val q = for {l <- license if (l.isDefined && l.get.id === license. ) {l.id === originalLicense.id}} yield l.activationsLeft
-          db.run(q.update(originalLicense.activationsLeft - 1))
-          true
-        } else {
-          false
-        }
-      case None => false
-    }
+  def updateActivationsLeftByID(id: Int, activationsLeft: Int): Future[Int] ={
+    val q = for { l <- licenses if l.id === id } yield l.activationsLeft
+    db.run(q.update(activationsLeft))
   }
 
 
-  def increaseActivations(licenseId: Int, activationAmount: Int): Boolean = {
-    val license = getLicenseById(licenseId)
-
-    license match {
-      case Some(originalLicense) =>
-
-        val q = for {l <- licenses if l.id === originalLicense.id} yield (l.activationsLeft, l.totalActivations)
-        db.run(q.update((originalLicense.activationsLeft + activationAmount, originalLicense.totalActivations + activationAmount)))
-
-        true
-      case None => false
-    }
+  def updateTotalActivations(id: Int, totalActivations: Int): Future[Int] = {
+    val q = for { l <- licenses if l.id === id } yield l.totalActivations
+    db.run(q.update(totalActivations))
   }
 }
