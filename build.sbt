@@ -24,6 +24,9 @@ libraryDependencies ++= {
     "com.typesafe" % "config" % "1.3.4",
 
   "com.typesafe.akka" %% "akka-testkit" % akkaVersion % Test,
-    "org.scalatest" %% "scalatest" % "3.0.8" % Test
+    "org.scalatest" %% "scalatest" % "3.0.8" % Test,
+    "com.typesafe.akka" %% "akka-http-testkit" % "10.1.9" % Test
+
+
   )
 }

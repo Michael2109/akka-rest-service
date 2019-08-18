@@ -4,7 +4,7 @@ package com.licenseserver
 import akka.actor.{ActorRef, ActorSystem}
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
-import com.licenseserver.actors.UserRegistryActor
+import com.licenseserver.actors.LicenseActor
 import com.licenseserver.database.DatabaseConnector
 import com.licenseserver.routes.Routes
 
@@ -15,19 +15,12 @@ import scala.util.{Failure, Success}
 //#main-class
 object Server extends App with Routes {
 
-
-  // set up ActorSystem and other dependencies here
-  //#main-class
-  //#server-bootstrapping
   implicit val system: ActorSystem = ActorSystem("helloAkkaHttpServer")
   implicit val materializer: ActorMaterializer = ActorMaterializer()
   implicit val executionContext: ExecutionContext = system.dispatcher
-  //#server-bootstrapping
 
-  val userRegistryActor: ActorRef = system.actorOf(UserRegistryActor.props, "userRegistryActor")
+  val licenseActor: ActorRef = system.actorOf(LicenseActor.props, "licenseActor")
 
-
-  //#http-server
   val serverBinding: Future[Http.ServerBinding] = Http().bindAndHandle(routes, "localhost", 8080)
 
   if (serverBinding == null) {
@@ -45,10 +38,6 @@ object Server extends App with Routes {
     }
   }
 
-  DatabaseConnector
-
   Await.result(system.whenTerminated, Duration.Inf)
-  //#http-server
-  //#main-class
 }
 
