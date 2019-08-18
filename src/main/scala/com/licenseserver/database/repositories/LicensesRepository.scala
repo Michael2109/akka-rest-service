@@ -35,13 +35,21 @@ class LicensesRepository(db: H2Profile#Backend#Database) extends LicensesTable {
   }
 
   def activateLicense(key: String): Boolean = {
+
+    val licenseWithKey = licenses.filter(_.key === key).map(_.activationsLeft).
+    db.run(licenseWithKey.update())
+
+    val q = for { l <- licenses if l.key === key } yield l.activationsLeft
+    q.update().run
+
     val license = getLicenseByKey(key)
 
     license match {
       case Some(originalLicense) =>
 
+
         if (originalLicense.activationsLeft > 0) {
-          val q = for {l <- licenses if l.id === originalLicense.id} yield l.activationsLeft
+          val q = for {l <- license if (l.isDefined && l.get.id === license. ) {l.id === originalLicense.id}} yield l.activationsLeft
           db.run(q.update(originalLicense.activationsLeft - 1))
           true
         } else {
